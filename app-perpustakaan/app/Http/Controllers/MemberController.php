@@ -33,7 +33,7 @@ class MemberController extends Controller
     public function show(string $id)
     {
         // Mencari data berdasarkan ID, akan error 404 jika tidak ditemukan
-        $member = Member::findOrFail($id);
+        $member = Member::with(['loans.loanItems.book', 'loans.user'])->findOrFail($id);
 
         return view('members.show', compact('member'));
     }
