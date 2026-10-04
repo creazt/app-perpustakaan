@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;       
+use App\Models\Book;
 use App\Models\Loan;
 use App\Models\LoanItem;
-use App\Models\Member;     
-use App\Models\User;       
+use App\Models\Member;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class LoanController extends Controller
@@ -41,7 +41,7 @@ class LoanController extends Controller
             'user_id' => $validated['user_id'],
             'tanggal_pinjam' => $validated['tanggal_pinjam'],
             'tanggal_kembali' => $validated['tanggal_kembali'],
-            'status' => 'dipinjam', // Default status
+            'status' => 'dipinjam',
         ]);
 
         foreach ($validated['book_ids'] as $bookId) {
@@ -85,10 +85,23 @@ class LoanController extends Controller
     public function destroy(string $id)
     {
         $loan = Loan::findOrFail($id);
-        $loan->loanItems()->delete(); // Hapus item dulu
+        $loan->loanItems()->delete(); 
         $loan->delete();
 
         return redirect()->route('loans.index')
             ->with('success', 'Transaksi peminjaman berhasil dihapus.');
+    }
+
+    public function kembalikan(string $id)
+    {
+        $loan = Loan::findOrFail($id);
+
+        $loan->update([
+            'status' => 'dikembalikan',
+            'tanggal_dikembalikan' => now()->toDateString(),
+        ]);
+
+        return redirect()->route('loans.index')
+            ->with('success', 'Buku berhasil dikembalikan.');
     }
 }

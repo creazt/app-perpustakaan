@@ -38,7 +38,15 @@
             </td>
             <td>{{ $loan['tanggal_pinjam'] }}</td>
             <td>{{ $loan['tanggal_kembali'] }}</td>
-            <td>{{ ucfirst($loan['status']) }}</td>
+            <td>
+                @if($loan['status'] == 'dikembalikan')
+                <span class="badge badge-success">Dikembalikan</span>
+                @elseif($loan['status'] == 'terlambat')
+                <span class="badge badge-danger">Terlambat</span>
+                @else
+                <span class="badge badge-warning">Dipinjam</span>
+                @endif
+            </td>
             <td>
                 <a href="{{ route('loans.show', $loan['id']) }}">Detail</a> |
                 <a href="{{ route('loans.edit', $loan['id']) }}">Edit</a> |
@@ -47,6 +55,14 @@
                     @method('DELETE')
                     <button type="submit">Hapus</button>
                 </form>
+
+                @if ($loan['status'] === 'dipinjam')
+                |
+                <form action="{{ route('loans.kembalikan', $loan['id']) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" style="background:none; border:none; color:#059669; cursor:pointer; text-decoration:underline; padding:0;">Kembalikan</button>
+                </form>
+                @endif
             </td>
         </tr>
         @empty
@@ -58,3 +74,5 @@
 </table>
 {{ $loans->links() }}
 @endsection
+
+{{ ucfirst($loan['status']

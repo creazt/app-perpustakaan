@@ -58,6 +58,15 @@
         </tr>
         <tr>
             <th>Status</th>
+            <td>
+                @if($loan['status'] == 'dikembalikan')
+                <span class="badge badge-success">Dikembalikan</span>
+                @elseif($loan['status'] == 'terlambat')
+                <span class="badge badge-danger">Terlambat</span>
+                @else
+                <span class="badge badge-warning">Dipinjam</span>
+                @endif
+            </td>
             <td>{{ ucfirst($loan['status']) }}</td>
         </tr>
     </table>
