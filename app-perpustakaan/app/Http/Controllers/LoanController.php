@@ -6,8 +6,8 @@ use App\Models\Book;
 use App\Models\Loan;
 use App\Models\LoanItem;
 use App\Models\Member;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoanController extends Controller
 {
@@ -21,15 +21,14 @@ class LoanController extends Controller
     {
         $members = Member::all();
         $books = Book::all();
-        $users = User::all();
-        return view('loans.create', compact('members', 'books', 'users'));
+
+        return view('loans.create', compact('members', 'books'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'member_id' => 'required|integer|exists:members,id',
-            'user_id' => 'required|integer|exists:users,id',
             'tanggal_pinjam' => 'required|date',
             'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'book_ids' => 'required|array|min:1',
@@ -38,18 +37,20 @@ class LoanController extends Controller
 
         $loan = Loan::create([
             'member_id' => $validated['member_id'],
-            'user_id' => $validated['user_id'],
+            'user_id' => Auth::id(),
             'tanggal_pinjam' => $validated['tanggal_pinjam'],
             'tanggal_kembali' => $validated['tanggal_kembali'],
             'status' => 'dipinjam',
         ]);
-
         foreach ($validated['book_ids'] as $bookId) {
-            $loan->loanItems()->create(['book_id' => $bookId]);
+            LoanItem::create([
+                'loan_id' => $loan->id,
+                'book_id' => $bookId,
+            ]);
         }
 
         return redirect()->route('loans.index')
-            ->with('success', 'Transaksi peminjaman berhasil dibuat.');
+            ->with('success', 'Data peminjaman berhasil ditambahkan.');
     }
 
     public function show(string $id)
@@ -85,7 +86,7 @@ class LoanController extends Controller
     public function destroy(string $id)
     {
         $loan = Loan::findOrFail($id);
-        $loan->loanItems()->delete(); 
+        $loan->loanItems()->delete();
         $loan->delete();
 
         return redirect()->route('loans.index')

@@ -12,9 +12,9 @@
 </div>
 @endif
 
-<table>
+<table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
     <thead>
-        <tr>
+        <tr style="background: #f1f5f9;">
             <th>ID</th>
             <th>Anggota</th>
             <th>Petugas</th>
@@ -28,37 +28,38 @@
     <tbody>
         @forelse ($loans as $loan)
         <tr>
-            <td>{{ $loan['id'] }}</td>
-            <td>{{ $loan['member']['nama'] }}</td>
-            <td>{{ $loan['user']['name'] }}</td>
+            <td>{{ $loan->id }}</td>
+            <td>{{ $loan->member->nama }}</td>
+            <td>{{ $loan->user->name }}</td>
             <td>
-                @foreach ($loan['loanItems'] as $item)
-                {{ $item['book']['judul'] }}@if (!$loop->last), @endif
+                @foreach ($loan->loanItems as $item)
+                    {{ $item->book->judul }}@if (!$loop->last), @endif
                 @endforeach
             </td>
-            <td>{{ $loan['tanggal_pinjam'] }}</td>
-            <td>{{ $loan['tanggal_kembali'] }}</td>
+            <td>{{ $loan->tanggal_pinjam }}</td>
+            <td>{{ $loan->tanggal_kembali }}</td>
             <td>
-                @if($loan['status'] == 'dikembalikan')
-                <span class="badge badge-success">Dikembalikan</span>
-                @elseif($loan['status'] == 'terlambat')
-                <span class="badge badge-danger">Terlambat</span>
+                @if($loan->status == 'dikembalikan')
+                    <span style="color: green; font-weight: bold;">Dikembalikan</span>
+                @elseif($loan->status == 'terlambat')
+                    <span style="color: red; font-weight: bold;">Terlambat</span>
                 @else
-                <span class="badge badge-warning">Dipinjam</span>
+                    <span style="color: orange; font-weight: bold;">Dipinjam</span>
                 @endif
             </td>
             <td>
-                <a href="{{ route('loans.show', $loan['id']) }}">Detail</a> |
-                <a href="{{ route('loans.edit', $loan['id']) }}">Edit</a> |
-                <form action="{{ route('loans.destroy', $loan['id']) }}" method="POST" style="display:inline;">
+                <a href="{{ route('loans.show', $loan->id) }}">Detail</a> |
+                <a href="{{ route('loans.edit', $loan->id) }}">Edit</a> |
+                
+                <form action="{{ route('loans.destroy', $loan->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
-                    <button type="submit">Hapus</button>
+                    <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
                 </form>
 
-                @if ($loan['status'] === 'dipinjam')
+                @if ($loan->status === 'dipinjam')
                 |
-                <form action="{{ route('loans.kembalikan', $loan['id']) }}" method="POST" style="display:inline;">
+                <form action="{{ route('loans.kembalikan', $loan->id) }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" style="background:none; border:none; color:#059669; cursor:pointer; text-decoration:underline; padding:0;">Kembalikan</button>
                 </form>
@@ -67,12 +68,13 @@
         </tr>
         @empty
         <tr>
-            <td colspan="8">Belum ada data peminjaman.</td>
+            <td colspan="8" style="text-align: center;">Belum ada data peminjaman.</td>
         </tr>
         @endforelse
     </tbody>
 </table>
-{{ $loans->links() }}
-@endsection
 
-{{ ucfirst($loan['status']
+<div style="margin-top: 20px;">
+    {{ $loans->links() }}
+</div>
+@endsection

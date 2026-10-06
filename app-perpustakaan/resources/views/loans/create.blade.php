@@ -55,6 +55,17 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
+        /* Style tambahan untuk info petugas */
+        .petugas-info {
+            margin-top: 12px;
+            padding: 10px;
+            background-color: #f1f5f9;
+            border-left: 4px solid #2563eb;
+            border-radius: 4px;
+            color: #334155;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -65,6 +76,7 @@
     <form action="{{ route('loans.store') }}" method="POST">
         @csrf
 
+        <!-- Anggota -->
         <label for="member_id">Anggota</label>
         <select name="member_id" id="member_id">
             <option value="">-- Pilih Anggota --</option>
@@ -76,25 +88,21 @@
         </select>
         @error('member_id') <div class="error">{{ $message }}</div> @enderror
 
-        <label for="user_id">Petugas</label>
-        <select name="user_id" id="user_id">
-            <option value="">-- Pilih Petugas --</option>
-            @foreach ($users as $user)
-            <option value="{{ $user['id'] }}" @selected(old('user_id')==$user['id'])>
-                {{ $user['name'] }}
-            </option>
-            @endforeach
-        </select>
-        @error('user_id') <div class="error">{{ $message }}</div> @enderror
+        <div class="petugas-info">
+            Petugas pencatat: <strong>{{ auth()->user()->name }}</strong> (otomatis dari akun yang login).
+        </div>
 
+        <!-- Tanggal Pinjam -->
         <label for="tanggal_pinjam">Tanggal Pinjam</label>
-        <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" value="{{ old('tanggal_pinjam') }}">
+        <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" value="{{ old('tanggal_pinjam', date('Y-m-d')) }}">
         @error('tanggal_pinjam') <div class="error">{{ $message }}</div> @enderror
 
+        <!-- Tanggal Kembali -->
         <label for="tanggal_kembali">Tanggal Kembali</label>
         <input type="date" name="tanggal_kembali" id="tanggal_kembali" value="{{ old('tanggal_kembali') }}">
         @error('tanggal_kembali') <div class="error">{{ $message }}</div> @enderror
 
+        <!-- Buku yang Dipinjam -->
         <label>Buku yang Dipinjam</label>
         <div class="checkbox-list">
             @forelse ($books as $book)
