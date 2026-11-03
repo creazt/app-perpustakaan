@@ -17,12 +17,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('books.index');
     });
-
     Route::resource('books', BookController::class);
     Route::resource('members', MemberController::class);
     Route::resource('loans', LoanController::class);
     Route::put('/loans/{id}/kembalikan', [LoanController::class, 'kembalikan'])
         ->name('loans.kembalikan');
+    Route::get('/profil', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profil');
+    Route::put('/profil/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profil.password');
 
     // Protected Admin (Harus di DALAM group auth)
     Route::middleware(['admin'])->group(function () {
